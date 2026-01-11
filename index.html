@@ -11,10 +11,11 @@
         <div id="setup-container">
             <h1>Mafia Game</h1>
             <div id="player-inputs">
-                <input type="text" id="player-name" placeholder="Enter player name">
-                <button id="add-player">Add Player</button>
+                <input type="number" id="num-players" placeholder="Enter number of players" min="4" max="6">
+                <button id="set-players">Set Players</button>
             </div>
-            <button id="start-game">Start Game</button>
+            <div id="player-names-container" class="hidden"></div>
+            <button id="start-game" class="hidden">Start Game</button>
         </div>
         <div id="game-container" class="hidden">
             <div id="player-list"></div>

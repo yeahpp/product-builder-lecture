@@ -1,11 +1,13 @@
 const setupContainer = document.getElementById('setup-container');
 const gameContainer = document.getElementById('game-container');
-const playerNameInput = document.getElementById('player-name');
-const addPlayerButton = document.getElementById('add-player');
+const numPlayersInput = document.getElementById('num-players');
+const setPlayersButton = document.getElementById('set-players');
+const playerNamesContainer = document.getElementById('player-names-container');
 const startGameButton = document.getElementById('start-game');
 const playerList = document.getElementById('player-list');
 const gameInfo = document.getElementById('game-info');
 const actions = document.getElementById('actions');
+const playerInputs = document.getElementById('player-inputs');
 
 let players = [];
 const roles = ['Mafia', 'Doctor', 'Police', 'Citizen', 'Citizen', 'Citizen'];
@@ -42,37 +44,36 @@ class PlayerCard extends HTMLElement {
 }
 customElements.define('player-card', PlayerCard);
 
-function addPlayer() {
-    const playerName = playerNameInput.value.trim();
-    if (playerName && players.length < 6) {
-        players.push({ name: playerName, role: '', status: 'alive' });
-        playerNameInput.value = '';
-        renderPlayerList();
-    } else if (players.length >= 6) {
-        alert('Maximum of 6 players allowed.');
-    }
-}
+function setPlayers() {
+    const numPlayers = parseInt(numPlayersInput.value, 10);
 
-function renderPlayerList() {
-    const playerNamesDiv = document.querySelector('#setup-container > div#player-names');
-    if(playerNamesDiv) {
-        playerNamesDiv.innerHTML = ''
-    } else {
-        const playerNamesDiv = document.createElement('div');
-        playerNamesDiv.id = 'player-names';
-        setupContainer.insertBefore(playerNamesDiv, startGameButton);
+    if (isNaN(numPlayers) || numPlayers < 4 || numPlayers > 6) {
+        alert('Please enter a number between 4 and 6.');
+        return;
     }
-    
 
-    players.forEach(player => {
-        const playerDiv = document.createElement('div');
-        playerDiv.textContent = player.name;
-        document.querySelector('#setup-container > div#player-names').appendChild(playerDiv);
-    });
+    playerNamesContainer.innerHTML = '';
+    for (let i = 0; i < numPlayers; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = `Player ${i + 1} Name`;
+        input.classList.add('player-name-input');
+        playerNamesContainer.appendChild(input);
+    }
+
+    playerInputs.classList.add('hidden');
+    playerNamesContainer.classList.remove('hidden');
+    startGameButton.classList.remove('hidden');
 }
 
 function assignRoles() {
-    const availableRoles = [...roles];
+    // Adjust roles based on player count
+    const gameRoles = ['Mafia', 'Doctor', 'Police'];
+    while (gameRoles.length < players.length) {
+        gameRoles.push('Citizen');
+    }
+
+    const availableRoles = [...gameRoles];
     players.forEach(player => {
         const randomIndex = Math.floor(Math.random() * availableRoles.length);
         player.role = availableRoles.splice(randomIndex, 1)[0];
@@ -80,8 +81,20 @@ function assignRoles() {
 }
 
 function startGame() {
+    const nameInputs = document.querySelectorAll('.player-name-input');
+    players = [];
+
+    for (const input of nameInputs) {
+        const playerName = input.value.trim();
+        if (!playerName) {
+            alert('Please enter all player names.');
+            return;
+        }
+        players.push({ name: playerName, role: '', status: 'alive' });
+    }
+
     if (players.length < 4) {
-        alert('A minimum of 4 players is required to start the game.');
+        alert('A minimum of 4 players is required.');
         return;
     }
 
@@ -89,6 +102,7 @@ function startGame() {
     setupContainer.classList.add('hidden');
     gameContainer.classList.remove('hidden');
 
+    playerList.innerHTML = ''; // Clear previous game's player list
     players.forEach(player => {
         const playerCard = document.createElement('player-card');
         playerCard.setAttribute('name', player.name);
@@ -98,10 +112,12 @@ function startGame() {
     // Reveal roles to each player
     setTimeout(() => {
         players.forEach(player => {
-            alert(`Your role is: ${player.role}`);
+            alert(`${player.name}, your role is: ${player.role}`);
         });
+        // Start the first phase of the game (e.g., night)
+        // nightPhase(); 
     }, 100);
 }
 
-addPlayerButton.addEventListener('click', addPlayer);
+setPlayersButton.addEventListener('click', setPlayers);
 startGameButton.addEventListener('click', startGame);
