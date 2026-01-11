@@ -9,6 +9,13 @@ const gameInfo = document.getElementById('game-info');
 const actions = document.getElementById('actions');
 const playerInputs = document.getElementById('player-inputs');
 
+// Modal elements
+const roleRevealModal = document.getElementById('role-reveal-modal');
+const roleRevealPlayerName = document.getElementById('role-reveal-player-name');
+const roleRevealImage = document.getElementById('role-reveal-image');
+const roleRevealRoleName = document.getElementById('role-reveal-role-name');
+const roleRevealCloseButton = document.getElementById('role-reveal-close');
+
 let players = [];
 const roles = ['Mafia', 'Doctor', 'Police', 'Citizen', 'Citizen', 'Citizen'];
 
@@ -80,6 +87,28 @@ function assignRoles() {
     });
 }
 
+function revealRolesSequentially(index) {
+    if (index >= players.length) {
+        // All roles revealed, start the game's first phase
+        console.log("All roles revealed. Starting game.");
+        // nightPhase(); // This would be the next step
+        return;
+    }
+
+    const player = players[index];
+    roleRevealPlayerName.textContent = player.name;
+    roleRevealRoleName.textContent = player.role;
+    roleRevealImage.src = `https://placehold.co/400x300/2a2a2a/ffffff?text=${player.role}`;
+    roleRevealImage.alt = `Image for ${player.role}`;
+
+    roleRevealModal.classList.remove('hidden');
+
+    roleRevealCloseButton.addEventListener('click', () => {
+        roleRevealModal.classList.add('hidden');
+        revealRolesSequentially(index + 1);
+    }, { once: true }); // Use { once: true } to prevent multiple listeners
+}
+
 function startGame() {
     const nameInputs = document.querySelectorAll('.player-name-input');
     players = [];
@@ -109,14 +138,8 @@ function startGame() {
         playerList.appendChild(playerCard);
     });
 
-    // Reveal roles to each player
-    setTimeout(() => {
-        players.forEach(player => {
-            alert(`${player.name}, your role is: ${player.role}`);
-        });
-        // Start the first phase of the game (e.g., night)
-        // nightPhase(); 
-    }, 100);
+    // Start revealing roles
+    revealRolesSequentially(0);
 }
 
 setPlayersButton.addEventListener('click', setPlayers);
