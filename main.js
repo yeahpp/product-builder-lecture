@@ -103,11 +103,11 @@ function showRoleForCurrentPlayer() {
 }
 
 function handleCloseRoleModal() {
+    roleRevealModal.classList.add('hidden');
     currentPlayerIndex++;
     if (currentPlayerIndex < players.length) {
-        showRoleForCurrentPlayer();
+        setTimeout(showRoleForCurrentPlayer, 200);
     } else {
-        roleRevealModal.classList.add('hidden');
         console.log("All roles revealed. Starting game.");
         // nightPhase();
     }
