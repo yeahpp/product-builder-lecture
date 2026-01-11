@@ -17,7 +17,7 @@ const roleRevealRoleName = document.getElementById('role-reveal-role-name');
 const roleRevealCloseButton = document.getElementById('role-reveal-close');
 
 let players = [];
-const roles = ['Mafia', 'Doctor', 'Police', 'Citizen', 'Citizen', 'Citizen'];
+let currentPlayerIndex = 0;
 
 class PlayerCard extends HTMLElement {
     constructor() {
@@ -74,7 +74,6 @@ function setPlayers() {
 }
 
 function assignRoles() {
-    // Adjust roles based on player count
     const gameRoles = ['Mafia', 'Doctor', 'Police'];
     while (gameRoles.length < players.length) {
         gameRoles.push('Citizen');
@@ -87,26 +86,31 @@ function assignRoles() {
     });
 }
 
-function revealRolesSequentially(index) {
-    if (index >= players.length) {
-        // All roles revealed, start the game's first phase
+function showRoleForCurrentPlayer() {
+    if (currentPlayerIndex >= players.length) {
         console.log("All roles revealed. Starting game.");
-        // nightPhase(); // This would be the next step
+        // nightPhase(); 
         return;
     }
 
-    const player = players[index];
+    const player = players[currentPlayerIndex];
     roleRevealPlayerName.textContent = player.name;
     roleRevealRoleName.textContent = player.role;
     roleRevealImage.src = `https://placehold.co/400x300/2a2a2a/ffffff?text=${player.role}`;
     roleRevealImage.alt = `Image for ${player.role}`;
 
     roleRevealModal.classList.remove('hidden');
+}
 
-    roleRevealCloseButton.addEventListener('click', () => {
+function handleCloseRoleModal() {
+    currentPlayerIndex++;
+    if (currentPlayerIndex < players.length) {
+        showRoleForCurrentPlayer();
+    } else {
         roleRevealModal.classList.add('hidden');
-        revealRolesSequentially(index + 1);
-    }, { once: true }); // Use { once: true } to prevent multiple listeners
+        console.log("All roles revealed. Starting game.");
+        // nightPhase();
+    }
 }
 
 function startGame() {
@@ -131,16 +135,17 @@ function startGame() {
     setupContainer.classList.add('hidden');
     gameContainer.classList.remove('hidden');
 
-    playerList.innerHTML = ''; // Clear previous game's player list
+    playerList.innerHTML = '';
     players.forEach(player => {
         const playerCard = document.createElement('player-card');
         playerCard.setAttribute('name', player.name);
         playerList.appendChild(playerCard);
     });
 
-    // Start revealing roles
-    revealRolesSequentially(0);
+    currentPlayerIndex = 0;
+    showRoleForCurrentPlayer();
 }
 
 setPlayersButton.addEventListener('click', setPlayers);
 startGameButton.addEventListener('click', startGame);
+roleRevealCloseButton.addEventListener('click', handleCloseRoleModal);
