@@ -10,7 +10,8 @@ const actions = document.getElementById('actions');
 const playerInputs = document.getElementById('player-inputs');
 
 // Modal elements
-const roleRevealModal = document.getElementById('role-reveal-modal');
+const 
+ = document.getElementById('role-reveal-modal');
 const roleRevealPlayerName = document.getElementById('role-reveal-player-name');
 const roleRevealImage = document.getElementById('role-reveal-image');
 const roleRevealRoleName = document.getElementById('role-reveal-role-name');
@@ -89,7 +90,7 @@ function assignRoles() {
 function showRoleForCurrentPlayer() {
     if (currentPlayerIndex >= players.length) {
         console.log("All roles revealed. Starting game.");
-        // nightPhase(); 
+        nightPhase(); 
         return;
     }
 
@@ -109,7 +110,7 @@ function handleCloseRoleModal() {
         setTimeout(showRoleForCurrentPlayer, 200);
     } else {
         console.log("All roles revealed. Starting game.");
-        // nightPhase();
+        nightPhase();
     }
 }
 
@@ -144,6 +145,18 @@ function startGame() {
 
     currentPlayerIndex = 0;
     showRoleForCurrentPlayer();
+}
+
+function nightPhase() {
+    gameInfo.textContent = "Night has fallen. The Mafia awakens.";
+    // More complex night logic will go here.
+    // For now, we can just move to the next phase after a delay.
+    setTimeout(dayPhase, 3000);
+}
+
+function dayPhase() {
+    gameInfo.textContent = "Day breaks. Discuss and vote who to lynch.";
+    // Voting logic will go here.
 }
 
 setPlayersButton.addEventListener('click', setPlayers);
