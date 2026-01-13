@@ -10,8 +10,7 @@ const actions = document.getElementById('actions');
 const playerInputs = document.getElementById('player-inputs');
 
 // Modal elements
-const 
- = document.getElementById('role-reveal-modal');
+const roleRevealModal = document.getElementById('role-reveal-modal');
 const roleRevealPlayerName = document.getElementById('role-reveal-player-name');
 const roleRevealImage = document.getElementById('role-reveal-image');
 const roleRevealRoleName = document.getElementById('role-reveal-role-name');
@@ -156,7 +155,29 @@ function nightPhase() {
 
 function dayPhase() {
     gameInfo.textContent = "Day breaks. Discuss and vote who to lynch.";
-    // Voting logic will go here.
+    actions.innerHTML = ''; // Clear previous actions
+
+    const voteContainer = document.createElement('div');
+    voteContainer.id = 'vote-container';
+
+    players.forEach(player => {
+        if (player.status === 'alive') {
+            const voteButton = document.createElement('button');
+            voteButton.textContent = `Vote ${player.name}`;
+            voteButton.addEventListener('click', () => handleVote(player));
+            voteContainer.appendChild(voteButton);
+        }
+    });
+
+    actions.appendChild(voteContainer);
+}
+
+function handleVote(votedPlayer) {
+    // For now, we can just announce the vote.
+    // A more complex implementation would involve collecting votes from all players.
+    gameInfo.textContent = `${votedPlayer.name} has been voted for lynching.`;
+    actions.innerHTML = ''; // Clear actions after voting
+    // Here we would check if the player is lynched and then proceed to the next night.
 }
 
 setPlayersButton.addEventListener('click', setPlayers);
